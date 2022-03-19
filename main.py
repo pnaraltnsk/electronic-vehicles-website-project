@@ -1,4 +1,4 @@
-import datetime, os
+import datetime, os, random
 import google.oauth2.id_token
 from google.auth.transport import requests
 from google.cloud import datastore
@@ -7,7 +7,7 @@ from flask import Flask, render_template, request, redirect #framework
 app = Flask(__name__) #flask app object
 # __name__ part takes the name of curr file
 # and passes it as part of the Flask constructor.
-credential_path = "C:/Users/pnral/AppData/Local/Google/Cloud SDK/Cloud Examples/testing.json"
+credential_path = "C:/Users/pnral/AppData/Local/Google/Cloud SDK/Cloud Examples/examples-342715-be5d9216fda2.json"
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = credential_path
 datastore_client = datastore.Client()
 
@@ -31,7 +31,6 @@ def fetch_times(email, limit):
 def retrieveUserInfo(claims):
     entity_key = datastore_client.key('UserInfo', claims['email'])
     entity = datastore_client.get(entity_key)
-
     return entity
 
 def createUserInfo(claims):
@@ -40,43 +39,86 @@ def createUserInfo(claims):
     entity.update({
         'email': claims['email'],
         'name': claims['name'],
-        'creation_date': datetime.datetime.now(),
-        'bool_value': True,
-        'float_value': 3.14,
-        'int_value': 10,
-        'string_value': 'this is a sample string',
-        'list_value': [1, 2, 3, 4],
-        'dictionary_value': {'A' : 1, 'B': 2, 'C': 3}
+        'ev_list': []
     })
     datastore_client.put(entity)
 
-def  updateUserInfo(claims, new_string, new_int, new_float):
-    entity_key = datastore_client.key('UserInfo', claims['email'])
-    entity = datastore_client.get(entity_key)
+def retrieveEVs(user_info):
+    ev_ids = user_info['ev_list']
+    ev_keys = []
+    for i in range(len(ev_ids)):
+        ev_keys.append(datastore_client.key('EV', ev_ids[i]))
+    ev_list = datastore_client.get_multi(ev_keys)
+    return ev_list
+
+def createEV(obj_name, manufacturer, year, battery_size, wltp_range, cost, power):
+    entity = datastore.Entity()
     entity.update({
-        'string_value': new_string,
-        'int_value': new_int,
-        'float_value': new_float
+        'obj_name': obj_name,
+        'manufacturer': manufacturer,
+        'year': year,
+        'battery_size': battery_size,
+        'WLTP_range': wltp_range,
+        'cost': cost,
+        'power': power
     })
-    datastore_client.put(entity)
+    return entity
 
-@app.route('/edit_user_info', methods=['POST'])
-def editUserInfo():
+def addEVToUser(user_info, ev_entity):
+    evs = user_info['ev_list']
+    evs.append(ev_entity)
+    user_info.update({
+        'ev_list': evs
+    })
+    datastore_client.put(user_info)
+
+def deleteEV(claims, id):
+    user_info = retrieveUserInfo(claims)
+    ev_list = user_info['ev_list']
+
+    del ev_list[id]
+    user_info.update({
+        'ev_list' : ev_list
+    })
+    datastore_client.put(user_info)
+
+def retrieve_all_entities():
+    query = datastore_client.query(kind='UserInfo')
+    all_keys = query.fetch()
+    return all_keys
+
+@app.route('/add_ev', methods=['POST'])
+def addEV():
     id_token = request.cookies.get("token")
-    error_message = None
     claims = None
     user_info = None
     if id_token:
         try:
             claims = google.oauth2.id_token.verify_firebase_token(id_token,
-    firebase_request_adapter)
-            new_string = request.form['string_update']
-            new_int = request.form['int_update']
-            new_float = request.form['float_update']
-            updateUserInfo(claims, new_string, new_int, new_float)
+        firebase_request_adapter)
+            user_info = retrieveUserInfo(claims)
+            ev = createEV(request.form['obj_name'],
+            request.form['manufacturer'], request.form['year'], request.form['battery_size']
+            , request.form['WLTP_range'], request.form['cost'], request.form['power'])
+            addEVToUser(user_info, ev)
         except ValueError as exc:
             error_message = str(exc)
-    return redirect("/")
+    return redirect('/')
+
+@app.route('/delete_ev/<int:id>', methods=['POST'])
+def deleteEVFromUser(id):
+    id_token = request.cookies.get("token")
+    error_message = None
+    if id_token:
+        try:
+            claims = google.oauth2.id_token.verify_firebase_token(id_token,
+        firebase_request_adapter)
+            deleteEV(claims, id)
+        except ValueError as exc:
+            error_message = str(exc)
+    return redirect('/')
+
+
 
 
 @app.route('/')
@@ -86,7 +128,9 @@ def root():
     error_message = None
     claims = None
     user_info = None
+    electric_v = None
 
+    all_ev = retrieve_all_entities()
     if id_token:
         try:
             claims = google.oauth2.id_token.verify_firebase_token(id_token,
@@ -99,7 +143,8 @@ def root():
             error_message = str(exc)
 
 
-    return render_template('index.html', user_data=claims, error_message=error_message, user_info=user_info)
+    return render_template('index.html', user_data=claims, error_message=error_message,
+    user_info=user_info, all_ev=all_ev)
 
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=8080, debug=True)

@@ -14,34 +14,60 @@ href="https://www.gstatic.com/firebasejs/ui/4.4.0/firebase-ui-auth.css" />
 filename='style.css') }}">
 </head>
 <body>
- <h1>Datastore and Firebase Auth Example</h1>
- <div id="firebase-auth-container"></div>
-   <button id="sign-out" hidden="true">Sign out</button>
-   <div id="login-info" hidden="true">
-     <h2>Login Info</h2>
-     {% if user_data %}
-      <dl>
-        <dt>Name:</dt><dd>{{ user_data['name'] }}</dd>
-        <dt>Email:</dt><dd>{{ user_data['email'] }}</dd>
-        <dt>Boolean Value:</dt><dd>{{ user_info['bool_value'] }}</dd>
-        <dt>Float Value:</dt><dd>{{ user_info['float_value'] }}</dd>
-        <dt>Int Value:</dt><dd>{{ user_info['int_value'] }}</dd>
-        <dt>String Value:</dt><dd>{{ user_info['string_value'] }}</dd>
-        <dt>List Value:</dt><dd>{{ user_info['list_value'] }}</dd>
-        <dt>Dictionary Value:</dt><dd>{{ user_info['dictionary_value'] }}</dd>
-     </dl>
-     <form action="/edit_user_info" method="post">
-        Int update:<input type="number" value="0" name="int_update"/><br/>
-        Float update:<input type="number" value="0.0" name="float_update",
-      step="any"/><br/>
-        String update:<input type="text" value="" name="string_update"/><br/>
-        <input type="submit" value="Update values" name="submit_button"/>
-     </form>
-   {% elif error_message %}
-    <p>Error Message: {{ error_message }}</p>
-   {% endif %}
- </div>
+ <button class="btn1" id="sign-out" hidden="true">Sign out</button>
+ <button class="btn1" id="home" hidden="true">Home</button><br/>
 
+ <h1>Electric Vehicles</h1>
+ <div id="firebase-auth-container"></div>
+ <form class="cardSearch" action="/search_ev" method="post">
+    <label class="evform1" for="evname"> Name of Product:</label> <input class="evforminput" id="evname" type="text" value="" name="obj_name"/>
+    <label class="evform1" for="evman">Manufacturer:</label> <input class="evforminput" id="evman" type="text" value="" name="manufacturer"/>
+    <label class="evform1" for="evyear">Year:</label> <input class="evforminput" id="evyear" type="number" value="2022" name="year"/>
+    <label class="evform1" for="evnbatsz">Battery Size:</label> <input class="evforminput" id="evnbatsz" type="number" value="" name="battery_size"/>
+    <label class="evform1" for="evwltp">WLTP Range:</label> <input class="evforminput" id="evwltp" type="number" value="" name="WLTP_range"/>
+    <label class="evform1" for="evcst">Cost:</label> <input class="evforminput" id="evcst" type="number" value="" name="cost"/>
+    <label class="evform1" for="evpwr">Power:</label> <input class="evforminput" id="evpwr" type="number" value="" name="power"/>
+    <input type="submit" value="SEARCH" name="search_button"/>
+ </form>
+ {% for a in all_ev %}
+   {% for ev in a['ev_list'] %}
+     <div class="card">
+       Name of Product:{{ ev.obj_name }}<br/>
+       Manufacturer:{{ ev.manufacturer }}<br/>
+       Year:{{ ev.year }}<br/>
+       Battery Size:{{ ev.battery_size }}<br/>
+       WLTP Range:{{ ev.WLTP_range }}<br/>
+       Cost:{{ ev.cost }}<br/>
+       Power:{{ ev.power }}<br/>
+     </div>
+   {% endfor %}
+ {% endfor %}
+
+
+
+   <div id="login-info" hidden="true">
+    {% if user_data %}
+    {{user_info}}
+     <form action="/add_ev" method="post">
+        <label class="evform" for="evname"> Name of Product: </label> <input class="evforminput" id="evname" type="text" value="" name="obj_name"/><br/>
+        <label class="evform" for="evman">Manufacturer: </label> <input class="evforminput" id="evman" type="text" value="" name="manufacturer"/><br/>
+        <label class="evform" for="evyear">Year: </label> <input class="evforminput" id="evyear" type="number" value="2022" name="year"/><br/>
+        <label class="evform" for="evnbatsz">Battery Size: </label> <input class="evforminput" id="evnbatsz" type="number" value="" name="battery_size"/><br/>
+        <label class="evform" for="evwltp">WLTP Range: </label> <input class="evforminput" id="evwltp" type="number" value="" name="WLTP_range"/><br/>
+        <label class="evform" for="evcst">Cost: </label> <input class="evforminput" id="evcst" type="number" value="" name="cost"/><br/>
+        <label class="evform" for="evpwr">Power:  </label> <input class="evforminput" id="evpwr" type="number" value="" name="power"/><br/>
+        <input type="submit" value="ADD" name="submit_button"/>
+     </form>
+
+
+      {% elif error_message %}
+       <p>Error Message: {{ error_message }}</p>
+     {% endif %}
+
+    
+
+
+ </div>
 
 
  <script src="https://www.gstatic.com/firebasejs/7.14.5/firebase-app.js"></script>
