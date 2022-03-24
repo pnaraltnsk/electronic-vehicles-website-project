@@ -4,9 +4,15 @@ window.addEventListener('load', function () {
   // ask firebase to sign out the user
     firebase.auth().signOut();
   };
+  document.getElementById('sign-in').onclick = function() {
+  // ask firebase to sign out the user
+    //location.href = 'signin.html'
+    var ui = new firebaseui.auth.AuthUI(firebase.auth());
+    ui.start('#firebase-auth-container', uiConfig);
+  };
   document.getElementById('home').onclick = function() {
   // ask firebase to sign out the user
-    redirect("/");
+    return redirect("/");
   };
   var uiConfig = {
     signInSuccessUrl: '/',
@@ -14,23 +20,23 @@ window.addEventListener('load', function () {
       firebase.auth.EmailAuthProvider.PROVIDER_ID
     ]
  };
+
+
  firebase.auth().onAuthStateChanged(function(user) {
   if(user) {
     document.getElementById('sign-out').hidden = false;
-    document.getElementById('home').hidden = false;
     document.getElementById('login-info').hidden = false;
-    //document.getElementById('sign-in').hidden = true;
+    document.getElementById('sign-in').hidden = true;
+    document.getElementById('addcar').hidden = false;
     console.log('Signed in as ${user.displayName} (${user.email})');
     user.getIdToken().then(function(token) {
       document.cookie = "token=" + token;
     });
   } else {
-    var ui = new firebaseui.auth.AuthUI(firebase.auth());
-    ui.start('#firebase-auth-container', uiConfig);
     document.getElementById('sign-out').hidden = true;
-    document.getElementById('home').hidden = true;
     document.getElementById('login-info').hidden = true;
-    //document.getElementById('sign-in').hidden = false;
+    document.getElementById('sign-in').hidden = false;
+    document.getElementById('addcar').hidden = true;
     document.cookie = "token=";
   }
   }, function(error) {

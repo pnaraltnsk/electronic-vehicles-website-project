@@ -1,5 +1,5 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
 
 <!-- <script src="https://www.gstatic.com/firebasejs/ui/4.4.0/firebase-ui-auth.js"></script>
@@ -17,41 +17,34 @@ filename='style.css') }}">
 <body>
  <div>
 
-   <a class="button-1" id="home" href="{{ url_for('home')}}" hidden="true">Home</a>
-
-   <a class="button-1" href="{{ url_for('list_cars')}}">VIEW ALL CARS</a>
-   <a class="button-1" id="addcar" hidden="true" href="{{ url_for('addEV_page')}}">ADD CAR</a>
-   <a class="button-1" id="sign-out" hidden="true">Sign out</a>
-  <a class="button-1" id="sign-in" hidden="false">Sign in</a>
+    <a class="button-1" id="home" href="{{ url_for('home')}}" >Home</a>
+    <a class="button-1" id="sign-in" hidden="false">Sign in</a>
+    <a class="button-1" href="{{ url_for('list_cars')}}">VIEW ALL CARS</a>
+     <a class="button-1" id="addcar" hidden="true" href="{{ url_for('addEV_page')}}">ADD CAR</a>
+     <a class="button-1" id="sign-out" hidden="true">Sign out</a>
  </div>
-
-
-
  <h1>Electric Vehicles</h1>
-
+   {{ cars }}
 
  <div id="firebase-auth-container"></div>
 
+ {% for ev in cars %}
+ <a href="{{ url_for('home')}}">
+     <div class="card">
+       Name of Product:{{ ev.obj_name }}<br/>
+       Manufacturer:{{ ev.manufacturer }}<br/>
+       Year:{{ ev.year }}<br/>
+       Battery Size:{{ ev.battery_size }}<br/>
+       WLTP Range:{{ ev.WLTP_range }}<br/>
+       Cost:{{ ev.cost }}<br/>
+       Power:{{ ev.power }}<br/>
+     </div>
+ </a>
+{% endfor %}
 
 
 
 
-
-   <div id="login-info" hidden="true">
-    {% if user_data %}
-
-
-
-
-      {% elif error_message %}
-       <p>Error Message: {{ error_message }}</p>
-     {% endif %}
-
-
-
-
-
- </div>
 
 
  <script src="https://www.gstatic.com/firebasejs/7.14.5/firebase-app.js"></script>

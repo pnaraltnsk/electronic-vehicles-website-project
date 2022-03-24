@@ -1,6 +1,6 @@
 indexes:
-- kind: visit
+- kind: CarInfo
   ancestor: yes
   properties:
-  - name: timestamp
-    direction: desc
+  - name: email
+  - name: car_list
