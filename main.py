@@ -51,6 +51,7 @@ def createEV(claims, obj_name, manufacturer, year, battery_size, wltp_range, cos
     entity_key = datastore_client.key('car', id)
     entity = datastore.Entity(key=entity_key)
     entity.update({
+        'email': claims['email'],
         'obj_name': obj_name,
         'manufacturer': manufacturer,
         'year': year,
@@ -63,7 +64,7 @@ def createEV(claims, obj_name, manufacturer, year, battery_size, wltp_range, cos
     return id
 
 
-def addAddressToUser(user_info, id):
+def addCarToUser(user_info, id):
     car_keys = user_info['car_list']
     car_keys.append(id)
     user_info.update({
@@ -76,6 +77,39 @@ def retrieve_all_entities():
     query = datastore_client.query(kind='car')
     all_keys = list(query.fetch())
     return all_keys
+
+
+def deleteCar(claims, id):
+    user_info = retrieveUserInfo(claims)
+    entity_key = datastore_client.key('car', id)
+    entity = datastore_client.get(key=entity_key)
+    if user_info['email'] == entity['email']:
+        datastore_client.delete(entity_key)
+        car_ids = user_info['car_list']
+        car_ids.remove(id)
+        user_info.update({
+            'car_list': car_ids
+        })
+        datastore_client.put(user_info)
+    else:
+        return False
+
+
+def updateCarInfo(claims, id, obj_name, manufacturer, year, battery_size, wltp_range, cost, power):
+    entity_key = datastore_client.key('car', id)
+    entity = datastore_client.get(entity_key)
+    if claims['email'] == entity['email']:
+        entity.update({
+            'email': claims['email'],
+            'obj_name': obj_name,
+            'manufacturer': manufacturer,
+            'year': year,
+            'battery_size': battery_size,
+            'WLTP_range': wltp_range,
+            'cost': cost,
+            'power': power
+        })
+        datastore_client.put(entity)
 
 
 # these functions below will be for rendering templates
@@ -116,15 +150,12 @@ def list_cars():
     claims = None
     user_info = None
     cars = None
+    cars = retrieve_all_entities()
     if id_token:
         try:
             claims = google.oauth2.id_token.verify_firebase_token(id_token,
                                                                   firebase_request_adapter)
-            user_info = retrieveUserInfo(claims)
-            if user_info is None:
-                createUserInfo(claims)
-                user_info = retrieveUserInfo(claims)
-            cars = retrieve_all_entities()
+
         except ValueError as exc:
             error_message = str(exc)
 
@@ -132,9 +163,62 @@ def list_cars():
                            cars=cars)
 
 
-@app.route('/car-info')
-def detcarinfo_page():
-    return render_template('car-info.html')
+@app.route('/car-info/<int:id>', methods=['POST'])
+def detcarinfo_page(id):
+    id_token = request.cookies.get("token")
+    error_message = None
+    claims = None
+    if id_token:
+        try:
+            claims = google.oauth2.id_token.verify_firebase_token(id_token,
+                                                                  firebase_request_adapter)
+        except ValueError as exc:
+            error_message = str(exc)
+    entity_key = datastore_client.key('car', id)
+    result = datastore_client.get(entity_key)
+    return render_template('car-info.html', user_data=claims, result=result, id=id)
+
+
+@app.route('/delete_car/<int:id>', methods=['POST'])
+def deleteCarFromUser(id):
+    id_token = request.cookies.get("token")
+    error_message = None
+    if id_token:
+        try:
+            claims = google.oauth2.id_token.verify_firebase_token(id_token,
+                                                                  firebase_request_adapter)
+
+            result = deleteCar(claims, id)
+
+        except ValueError as exc:
+            error_message = str(exc)
+    return redirect('/list')
+
+
+@app.route('/edit_car_info/<int:id>', methods=['POST'])
+def editUserInfo(id):
+    id_token = request.cookies.get("token")
+    error_message = None
+    claims = None
+    user_info = None
+    if id_token:
+        try:
+            claims = google.oauth2.id_token.verify_firebase_token(id_token,
+                                                                  firebase_request_adapter)
+            updateCarInfo(claims,id,
+                          request.form['obj_name'],
+                          request.form['manufacturer'],
+                          request.form['year'],
+                          request.form['battery_size'],
+                          request.form['WLTP_range'],
+                          request.form['cost'],
+                          request.form['power'])
+
+        except ValueError as exc:
+            error_message = str(exc)
+    cars = retrieve_all_entities()
+    return render_template('list.html', user_data=claims, error_message=error_message,
+                           cars=cars)
 
 
 @app.route('/compare')
@@ -167,7 +251,7 @@ def addEV():
                 request.form['cost'],
                 request.form['power']
             )
-            addAddressToUser(user_info, id)
+            addCarToUser(user_info, id)
 
         except ValueError as exc:
             error_message = str(exc)
@@ -181,26 +265,25 @@ def queryMultipleAttribs():
     claims = None
     car_info = None
     result = None
+    car_info = retrieve_all_entities()
 
-    if id_token:
-        try:
-            claims = google.oauth2.id_token.verify_firebase_token(id_token,
-                                                                  firebase_request_adapter)
+    query = datastore_client.query(kind='car')
+    if request.form['obj_name']:
+        query.add_filter('obj_name', '=', str(request.form['obj_name']))
+    if request.form['manufacturer']:
+        query.add_filter('manufacturer', '=', str(request.form['manufacturer']))
+    if request.form['year']:
+        query.add_filter('ev_list.year', '=', str(request.form['year']))
+    if request.form['battery_size']:
+        query.add_filter('battery_size', '=', request.form['battery_size'])
+    if request.form['WLTP_range']:
+        query.add_filter('WLTP_range', '=', request.form['WLTP_range'])
+    if request.form['cost']:
+        query.add_filter('cost', '=', request.form['cost'])
+    if request.form['power']:
+        query.add_filter('power', '=', request.form['power'])
+    result = list(query.fetch())
 
-            car_info = retrieve_all_entities()
-            query = datastore_client.query(kind='car')
-
-            query.add_filter('obj_name', '=', str(request.form['obj_name']))
-            query.add_filter('manufacturer', '=', str(request.form['manufacturer']))
-            # query.add_filter('ev_list.year', '=', str(request.form['year']))
-            # query.add_filter('battery_size', '=', request.form['battery_size'])
-            # query.add_filter('WLTP_range', '=', request.form['WLTP_range'])
-            # query.add_filter('cost', '=', request.form['cost'])
-            # query.add_filter('power', '=', request.form['power'])
-            result = list(query.fetch())
-
-        except ValueError as exc:
-            error_message = str(exc)
     return render_template('list.html', user_data=claims, error_message=error_message,
                            cars=result)
 
