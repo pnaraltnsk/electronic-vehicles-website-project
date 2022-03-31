@@ -2,6 +2,7 @@
 window.addEventListener('load', function () {
   document.getElementById('sign-out').onclick = function() {
     firebase.auth().signOut();
+    window.location.href = '/';
   };
   document.getElementById('sign-in').onclick = function() {
     var ui = new firebaseui.auth.AuthUI(firebase.auth());

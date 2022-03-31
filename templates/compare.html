@@ -25,25 +25,45 @@ filename='style.css') }}">
      <a id="sign-out" hidden="true">Sign out</a>
      <a id="sign-in" hidden="false">Sign in</a>
  </div>
- <h1>Electric Vehicles</h1>
+ <h1 class="colorr">Electric Vehicles</h1>
 
  <div id="firebase-auth-container"></div>
 
+<table>
+  <tr>
+    <th style="width:10%">Name</th>
+    <th>Manufacturer</th>
+    <th>Year</th>
+    <th>Battery Size</th>
+    <th>WLTP Range</th>
+    <th>Cost</th>
+    <th>Power</th>
+  </tr>
+   {% for ev in compare %}
+  <tr>
+      <td>{{ ev.obj_name }}</td>
+      <td class="fa-remove">{{ ev.manufacturer }}</td>
+      <td class="fa-check">{{ ev.year }} </td>
+      <td class="fa-check">{{ ev.battery_size }} </td>
+      <td class="fa-check">{{ ev.WLTP_range }} </td>
+      <td class="fa-check">{{ ev.cost }} </td>
+      <td class="fa-check">{{ ev.power }} </td>
+  </tr>
+  {% endfor %}
 
-{% for ev in compare %}
- <div class="card">
-   Name of Product:{{ ev.obj_name }}<br/>
-   Manufacturer:{{ ev.manufacturer }}<br/>
-   Year:{{ ev.year }}<br/>
-   Battery Size:{{ ev.battery_size }}<br/>
-   WLTP Range:{{ ev.WLTP_range }}<br/>
-   Cost:{{ ev.cost }}<br/>
-   Power:{{ ev.power }}<br/>
-
- </div>
-{% endfor %}
+</table>
 
 
+
+
+
+
+
+<section class="comparison">
+    <div class="comp-column">
+
+    </div>
+</section>
 
 
 

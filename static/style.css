@@ -3,13 +3,41 @@ body {
  text-align: center;
  height: 100%;
  margin: 0px;
-
+ background-image: url("https://www.power-technology.com/wp-content/uploads/sites/21/2021/09/shutterstock_1864450102-scaled.jpg");
+ background-repeat: no-repeat;
+ background-size: cover;
+ background-position: 80% 20%;
 }
 
-section {
-     background-image: url("images/sunset.png");
-     background-repeat: no-repeat;
-     background-size: cover;
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  width: 100%;
+  border: 1px solid #ddd;
+  background: #FFFFFF;
+}
+
+/* Style table headers and table data */
+th, td {
+  text-align: center;
+  padding: 16px;
+}
+
+th:first-child, td:first-child {
+  text-align: left;
+}
+
+/* Zebra-striped table rows */
+tr:nth-child(even) {
+  background-color: #f2f2f2
+}
+
+.fa-check {
+  color: green;
+}
+
+.fa-remove {
+  color: red;
 }
 
 /* CSS for view-all-vehicles button*/
@@ -38,11 +66,23 @@ a.button-1 {
 .evform{
     width: 150px;
     display: inline-block;
+
+    font-weight: bold;
+    font-size: 18px;
 }
 
 .centerItems{
-    padding: 200px;
-    align-items: center;
+    padding: 30px;
+    align: center;
+    margin: auto;
+    background-color: #FFFFFF;
+    width: 400px;
+
+
+}
+
+.colorr{
+    color: #FFFFFF;
 }
 .evform1{
     width: auto;
@@ -61,6 +101,7 @@ a.button-1 {
   box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
   transition: 0.3s;
   border-radius: 5px;
+  background-color: #FFFFFF;
   padding: 10px;
   margin: 10px;
   text-align: left;
@@ -70,6 +111,7 @@ a.button-1 {
 .card{
   box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
   transition: 0.3s;
+  background-color: #FFFFFF;
   border-radius: 5px;
   padding: 10px;
   margin: 10px;
@@ -94,7 +136,7 @@ a.button-1 {
   padding: 1px;
   float: right;
   border-radius: 5px;
-  background-color: #008CBA;
+  background-color: #66CDAA;
   border-radius: 6px;
   border: none;
   touch-action: manipulation;
@@ -110,7 +152,7 @@ a.button-1 {
   padding: 6px;
   margin: 10px;
   border-radius: 5px;
-  background-color: #008CBA;
+  background-color: #66CDAA;
   border-radius: 6px;
   border: none;
   touch-action: manipulation;
@@ -143,6 +185,31 @@ a.button-1 {
 
 /* Add a color to the active/current link */
 .topnav a.active {
-  background-color: #008CBA;
+  background-color: #66CDAA;
   color: white;
+}
+
+/* The alert message box */
+.alert {
+  padding: 20px;
+  background-color: #f44336; /* Red */
+  color: white;
+  margin-bottom: 15px;
+}
+
+/* The close button */
+.closebtn {
+  margin-left: 15px;
+  color: white;
+  font-weight: bold;
+  float: right;
+  font-size: 22px;
+  line-height: 20px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+/* When moving the mouse over the close button */
+.closebtn:hover {
+  color: black;
 }

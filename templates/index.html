@@ -28,7 +28,7 @@ filename='style.css') }}">
 
 
 
- <h1>Electric Vehicles</h1>
+ <h1 class="colorr">Electric Vehicles</h1>
 
 
  <div id="firebase-auth-container"></div>
@@ -37,14 +37,12 @@ filename='style.css') }}">
 
 
    <div id="login-info" hidden="true">
-    {% if user_data %}
 
+        {% if user_data %}
 
-
-
-      {% elif error_message %}
-       <p>Error Message: {{ error_message }}</p>
-     {% endif %}
+        {% elif error_message %}
+           <p>Error Message: {{ error_message }}</p>
+        {% endif %}
 
 
 

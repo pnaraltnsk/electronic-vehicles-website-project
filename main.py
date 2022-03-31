@@ -236,7 +236,7 @@ def compareEV_page():
             error_message = str(exc)
 
     return render_template('compare-ev.html', user_data=claims, error_message=error_message,
-                           cars=cars)
+                           cars=cars, chck=True)
 
 
 @app.route('/compare_cars', methods=['POST'])
@@ -248,6 +248,9 @@ def compare_cars():
     cars = None
     cars = retrieve_all_entities()
     compare = []
+    entry1 = []
+    entry2 = []
+    entry3 = []
     if id_token:
         try:
             claims = google.oauth2.id_token.verify_firebase_token(id_token,
@@ -257,18 +260,26 @@ def compare_cars():
             error_message = str(exc)
 
     chckbx = request.form.getlist('checkboxes')
+    if 1 >= len(chckbx) >= 4:
+        return render_template('compare-ev.html', user_data=claims, error_message=error_message,
+                               cars=cars, chck=False)
+
+    entry1 = chckbx[0]
+    entry2 = chckbx[1]
+    if len(chckbx) == 3:
+        entry3 = chckbx[2]
+
     for id in chckbx:
         entity_key = datastore_client.key('car', int(id))
         compare.append(datastore_client.get(entity_key))
-    print(compare)
-    print(chckbx)
+
     return render_template('compare.html', user_data=claims, error_message=error_message,
                            cars=cars, compare=compare)
 
 
 @app.route('/add_EV')
 def addEV_page():
-    return render_template('addEV.html')
+    return render_template('addEV.html', add=True)
 
 
 @app.route('/add_ev', methods=['POST'])
@@ -283,6 +294,11 @@ def addEV():
             claims = google.oauth2.id_token.verify_firebase_token(id_token,
                                                                   firebase_request_adapter)
             user_info = retrieveUserInfo(claims)
+            cars = retrieve_all_entities()
+            for car in cars:
+                if car['obj_name'] == request.form['obj_name'] and car['manufacturer'] == request.form['manufacturer'] and car['year'] == request.form['year']:
+                    return render_template('addEV.html', add=False)
+
             id = createEV(
                 claims,
                 request.form['obj_name'],
