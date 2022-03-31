@@ -17,40 +17,38 @@ filename='style.css') }}">
 <body>
  <div class="topnav">
 
-   <a class="active" id="home" href="{{ url_for('home')}}" >Home</a>
+     <a id="home" href="{{ url_for('home')}}" >Home</a>
 
-   <a href="{{ url_for('list_cars')}}">VIEW ALL CARS</a>
-   <a href="{{ url_for('compareEV_page')}}" id="compare">COMPARE</a>
-   <a id="addcar" hidden="true" href="{{ url_for('addEV_page')}}">ADD CAR</a>
-   <a id="sign-out" hidden="true">Sign out</a>
-   <a id="sign-in" hidden="false">Sign in</a>
+     <a href="{{ url_for('list_cars')}}">VIEW ALL CARS</a>
+     <a class="active" href="{{ url_for('compareEV_page')}}" id="compare">COMPARE</a>
+     <a id="addcar" href="{{ url_for('addEV_page')}}">ADD CAR</a>
+     <a id="sign-out" hidden="true">Sign out</a>
+     <a id="sign-in" hidden="false">Sign in</a>
  </div>
-
-
-
  <h1>Electric Vehicles</h1>
-
 
  <div id="firebase-auth-container"></div>
 
 
-
-
-   <div id="login-info" hidden="true">
-    {% if user_data %}
-
-
-
-
-      {% elif error_message %}
-       <p>Error Message: {{ error_message }}</p>
-     {% endif %}
-
-
-
-
+{% for ev in compare %}
+ <div class="card">
+   Name of Product:{{ ev.obj_name }}<br/>
+   Manufacturer:{{ ev.manufacturer }}<br/>
+   Year:{{ ev.year }}<br/>
+   Battery Size:{{ ev.battery_size }}<br/>
+   WLTP Range:{{ ev.WLTP_range }}<br/>
+   Cost:{{ ev.cost }}<br/>
+   Power:{{ ev.power }}<br/>
 
  </div>
+{% endfor %}
+
+
+
+
+
+
+
 
 
  <script src="https://www.gstatic.com/firebasejs/7.14.5/firebase-app.js"></script>

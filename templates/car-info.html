@@ -15,13 +15,13 @@ href="https://www.gstatic.com/firebasejs/ui/4.4.0/firebase-ui-auth.css" />
 filename='style.css') }}">
 </head>
 <body>
- <div>
+ <div class="topnav">
 
-    <a class="button-1" id="home" href="{{ url_for('home')}}" >Home</a>
-    <a class="button-1" id="sign-in" hidden="false">Sign in</a>
-    <a class="button-1" href="{{ url_for('list_cars')}}">VIEW ALL CARS</a>
-     <a class="button-1" id="addcar" href="{{ url_for('addEV_page')}}">ADD CAR</a>
-     <a class="button-1" id="sign-out" hidden="true">Sign out</a>
+    <a id="home" href="{{ url_for('home')}}" >Home</a>
+    <a id="sign-in" hidden="false">Sign in</a>
+    <a href="{{ url_for('list_cars')}}">VIEW ALL CARS</a>
+     <a id="addcar" href="{{ url_for('addEV_page')}}">ADD CAR</a>
+     <a id="sign-out" hidden="true">Sign out</a>
  </div>
  <h1>Electric Vehicles</h1>
 
@@ -37,22 +37,24 @@ filename='style.css') }}">
     Cost:{{ result.cost }}<br/>
     Power:{{ result.power }}<br/>
      {% if user_data %}
-        <form action="/delete_car/{{id}}" method="post">
-            <input type="submit" value="DELETE" name="delete"/>
-        </form>
-
-         <div class="card">
-            <form action="/edit_car_info/{{id}}" method="post">
-             <label class="evform" for="evname"> Name of Product: </label> <input class="evforminput" id="evname" type="text" value="" name="obj_name" required/><br/>
-             <label class="evform" for="evman">Manufacturer: </label> <input class="evforminput" id="evman" type="text" value="" name="manufacturer" required/><br/>
-             <label class="evform" for="evyear">Year: </label> <input class="evforminput" id="evyear" type="number" value="2022" name="year" required/><br/>
-             <label class="evform" for="evnbatsz">Battery Size: </label> <input class="evforminput" id="evnbatsz" type="number" value="" name="battery_size" required/><br/>
-             <label class="evform" for="evwltp">WLTP Range: </label> <input class="evforminput" id="evwltp" type="number" value="" name="WLTP_range" required/><br/>
-             <label class="evform" for="evcst">Cost: </label> <input class="evforminput" id="evcst" type="number" value="" name="cost" required/><br/>
-             <label class="evform" for="evpwr">Power:  </label> <input class="evforminput" id="evpwr" type="number" value="" name="power" required/><br/>
-             <input type="submit" value="EDIT" name="submit_button"/>
+        {% if user_data['email'] == result.email %}
+            <form action="/delete_car/{{id}}" method="post">
+                <input type="submit" class="btnCompare" value="DELETE" name="delete"/>
             </form>
-        </div>
+
+             <div class="card">
+                <form action="/edit_car_info/{{id}}" method="post">
+                 <label class="evform" for="evname"> Name of Product: </label> <input class="evforminput" id="evname" type="text" value="" name="obj_name" required/><br/>
+                 <label class="evform" for="evman">Manufacturer: </label> <input class="evforminput" id="evman" type="text" value="" name="manufacturer" required/><br/>
+                 <label class="evform" for="evyear">Year: </label> <input class="evforminput" id="evyear" type="number" placeholder="2022" name="year" required/><br/>
+                 <label class="evform" for="evnbatsz">Battery Size: </label> <input class="evforminput" id="evnbatsz" type="number" value="" name="battery_size" required/><br/>
+                 <label class="evform" for="evwltp">WLTP Range: </label> <input class="evforminput" id="evwltp" type="number" value="" name="WLTP_range" required/><br/>
+                 <label class="evform" for="evcst">Cost: </label> <input class="evforminput" id="evcst" type="number" value="" name="cost" required/><br/>
+                 <label class="evform" for="evpwr">Power:  </label> <input class="evforminput" id="evpwr" type="number" value="" name="power" required/><br/>
+                 <input type="submit" class="btnCompare" value="EDIT" name="submit_button"/>
+                </form>
+            </div>
+        {% endif %}
      {% endif %}
 
  </div>

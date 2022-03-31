@@ -1,17 +1,13 @@
 'use strict';
 window.addEventListener('load', function () {
   document.getElementById('sign-out').onclick = function() {
-  // ask firebase to sign out the user
     firebase.auth().signOut();
   };
   document.getElementById('sign-in').onclick = function() {
-  // ask firebase to sign out the user
-    //location.href = 'signin.html'
     var ui = new firebaseui.auth.AuthUI(firebase.auth());
     ui.start('#firebase-auth-container', uiConfig);
   };
   document.getElementById('home').onclick = function() {
-  // ask firebase to sign out the user
     return redirect("/");
   };
   var uiConfig = {
@@ -25,7 +21,7 @@ window.addEventListener('load', function () {
  firebase.auth().onAuthStateChanged(function(user) {
   if(user) {
     document.getElementById('sign-out').hidden = false;
-    document.getElementById('login-info').hidden = false;
+
     document.getElementById('sign-in').hidden = true;
     document.getElementById('addcar').hidden = false;
     console.log('Signed in as ${user.displayName} (${user.email})');

@@ -6,6 +6,11 @@ body {
 
 }
 
+section {
+     background-image: url("images/sunset.png");
+     background-repeat: no-repeat;
+     background-size: cover;
+}
 
 /* CSS for view-all-vehicles button*/
 a.button-1 {
@@ -18,8 +23,7 @@ a.button-1 {
   border: none;
 
   color: #fff;
-  background: #3f51b5;
-   background-origin: border-box;
+  background-origin: border-box;
   box-shadow: 0px 0.5px 1.5px rgba(54, 122, 246, 0.25), inset 0px 0.8px 0px -0.25px rgba(255, 255, 255, 0.2);
   user-select: none;
   -webkit-user-select: none;
@@ -48,7 +52,7 @@ a.button-1 {
 }
 
 .evforminput{
-    width: 100px;
+    width: 110px;
     text-align: center;
 
 }
@@ -58,6 +62,7 @@ a.button-1 {
   transition: 0.3s;
   border-radius: 5px;
   padding: 10px;
+  margin: 10px;
   text-align: left;
 }
 
@@ -86,7 +91,58 @@ a.button-1 {
   margin-top: 0px;
   font-size: 14px;
   width: 100px;
+  padding: 1px;
   float: right;
   border-radius: 5px;
   background-color: #008CBA;
+  border-radius: 6px;
+  border: none;
+  touch-action: manipulation;
+  color: #fff;
+  background-origin: border-box;
+
+}
+
+.btnCompare{
+  font-size: 14px;
+  align: center;
+  width: 100px;
+  padding: 6px;
+  margin: 10px;
+  border-radius: 5px;
+  background-color: #008CBA;
+  border-radius: 6px;
+  border: none;
+  touch-action: manipulation;
+  color: #fff;
+  background-origin: border-box;
+
+}
+
+/* Add a black background color to the top navigation */
+.topnav {
+  background-color: #333;
+  overflow: hidden;
+}
+
+/* Style the links inside the navigation bar */
+.topnav a {
+  float: left;
+  color: #f2f2f2;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 17px;
+}
+
+/* Change the color of links on hover */
+.topnav a:hover {
+  background-color: #ddd;
+  color: black;
+}
+
+/* Add a color to the active/current link */
+.topnav a.active {
+  background-color: #008CBA;
+  color: white;
 }
