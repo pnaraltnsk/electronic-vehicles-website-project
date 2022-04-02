@@ -58,7 +58,7 @@ def createEV(claims, obj_name, manufacturer, year, battery_size, wltp_range, cos
         'battery_size': battery_size,
         'WLTP_range': wltp_range,
         'cost': cost,
-        'power': power
+        'power': power,
     })
     datastore_client.put(entity)
     return id
@@ -193,6 +193,9 @@ def deleteCarFromUser(id):
                            cars=cars)
 
 
+
+
+
 @app.route('/edit_car_info/<int:id>', methods=['POST'])
 def editUserInfo(id):
     id_token = request.cookies.get("token")
@@ -247,10 +250,10 @@ def compare_cars():
     user_info = None
     cars = None
     cars = retrieve_all_entities()
-    compare = []
-    entry1 = []
-    entry2 = []
-    entry3 = []
+    compare = None
+    car_list = []
+    minValue = [0] * 5
+    maxValue = [0] * 5
     if id_token:
         try:
             claims = google.oauth2.id_token.verify_firebase_token(id_token,
@@ -260,21 +263,59 @@ def compare_cars():
             error_message = str(exc)
 
     chckbx = request.form.getlist('checkboxes')
-    if 1 >= len(chckbx) >= 4:
+    if len(chckbx) <= 1:
         return render_template('compare-ev.html', user_data=claims, error_message=error_message,
                                cars=cars, chck=False)
 
-    entry1 = chckbx[0]
-    entry2 = chckbx[1]
-    if len(chckbx) == 3:
-        entry3 = chckbx[2]
-
     for id in chckbx:
-        entity_key = datastore_client.key('car', int(id))
-        compare.append(datastore_client.get(entity_key))
+        car_list.append(datastore_client.key('car', int(id)))
 
+    compare = datastore_client.get_multi(car_list)
+
+    for i in range(len(compare)):
+        comp = compare[i]
+        for j in range(1, len(compare)):
+            comp2 = compare[j]
+            if comp['year'] <= comp2['year']:
+                if minValue[0] == 0 or int(minValue[0]) > int(comp['year']):
+                    minValue[0] = comp['year']
+            else:
+                if int(maxValue[0]) < int(comp['year']):
+                    maxValue[0] = comp['year']
+
+            if comp['battery_size'] <= comp2['battery_size']:
+                if minValue[1] == 0 or int(minValue[1]) > int(comp['battery_size']):
+                    minValue[1] = comp['battery_size']
+            else:
+                if int(maxValue[1]) < int(comp['battery_size']):
+                    maxValue[1] = comp['battery_size']
+
+            if comp['WLTP_range'] <= comp2['WLTP_range']:
+                if minValue[2] == 0 or int(minValue[2]) > int(comp['WLTP_range']):
+                    minValue[2] = comp['WLTP_range']
+            else:
+                if int(maxValue[2]) < int(comp['WLTP_range']):
+                    maxValue[2] = comp['WLTP_range']
+
+            if comp['cost'] <= comp2['cost']:
+                if minValue[3] == 0 or int(minValue[3]) > int(comp['cost']):
+                    minValue[3] = comp['cost']
+            else:
+                if int(maxValue[3]) < int(comp['cost']):
+                    maxValue[3] = comp['cost']
+
+            if comp['power'] <= comp2['power']:
+                if minValue[4] == 0 or int(minValue[4]) > int(comp['power']):
+                    minValue[4] = comp['power']
+            else:
+                if int(maxValue[4]) < int(comp['power']):
+                    maxValue[4] = comp['power']
+
+        print(comp['power'])
+    print(minValue)
+    print(maxValue)
     return render_template('compare.html', user_data=claims, error_message=error_message,
-                           cars=cars, compare=compare)
+                           cars=cars, compare=compare, minVal=minValue, maxVal=maxValue)
 
 
 @app.route('/add_EV')
@@ -296,7 +337,8 @@ def addEV():
             user_info = retrieveUserInfo(claims)
             cars = retrieve_all_entities()
             for car in cars:
-                if car['obj_name'] == request.form['obj_name'] and car['manufacturer'] == request.form['manufacturer'] and car['year'] == request.form['year']:
+                if car['obj_name'] == request.form['obj_name'] and car['manufacturer'] == request.form[
+                    'manufacturer'] and car['year'] == request.form['year']:
                     return render_template('addEV.html', add=False)
 
             id = createEV(

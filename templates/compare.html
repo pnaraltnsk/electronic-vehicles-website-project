@@ -42,12 +42,46 @@ filename='style.css') }}">
    {% for ev in compare %}
   <tr>
       <td>{{ ev.obj_name }}</td>
-      <td class="fa-remove">{{ ev.manufacturer }}</td>
-      <td class="fa-check">{{ ev.year }} </td>
-      <td class="fa-check">{{ ev.battery_size }} </td>
-      <td class="fa-check">{{ ev.WLTP_range }} </td>
-      <td class="fa-check">{{ ev.cost }} </td>
-      <td class="fa-check">{{ ev.power }} </td>
+      <td>{{ ev.manufacturer }}</td>
+      {% if ev.year==minVal[0]%}
+        <td class="fa-remove">{{ ev.year }} </td>
+      {% elif ev.year==maxVal[0] %}
+        <td class="fa-check">{{ ev.year }} </td>
+      {% else %}
+        <td>{{ ev.year }} </td>
+      {% endif %}
+
+      {% if ev.battery_size==minVal[1]%}
+        <td class="fa-remove">{{ ev.battery_size }} </td>
+      {% elif ev.battery_size==maxVal[1] %}
+        <td class="fa-check">{{ ev.battery_size }} </td>
+      {% else %}
+        <td>{{ ev.battery_size }} </td>
+      {% endif %}
+
+      {% if ev.WLTP_range==minVal[2] %}
+        <td class="fa-remove">{{ ev.WLTP_range }} </td>
+      {% elif ev.WLTP_range==maxVal[2] %}
+        <td class="fa-check">{{ ev.WLTP_range }} </td>
+      {% else %}
+        <td>{{ ev.WLTP_range }} </td>
+      {% endif %}
+
+      {% if ev.cost==minVal[3] %}
+        <td class="fa-remove">{{ ev.cost }} </td>
+      {% elif ev.cost==maxVal[3] %}
+        <td class="fa-check">{{ ev.cost }} </td>
+      {% else %}
+        <td>{{ ev.cost }} </td>
+      {% endif %}
+
+      {% if ev.power==minVal[4] %}
+        <td class="fa-remove">{{ ev.power }} </td>
+      {% elif ev.power==maxVal[4] %}
+        <td class="fa-check">{{ ev.power }} </td>
+      {% else %}
+        <td>{{ ev.power }} </td>
+      {% endif %}
   </tr>
   {% endfor %}
 

@@ -57,6 +57,15 @@ filename='style.css') }}">
         {% endif %}
      {% endif %}
 
+     <form action="/add_review/{{id}}" method="post">
+    <label for="w3review">Submit your review:</label>
+    <textarea id="w3review" name="w3review" rows="4" cols="50">
+
+      </textarea>
+      <br><br>
+      <input type="submit" value="SUBMIT">
+    </form>
+
  </div>
 
 
