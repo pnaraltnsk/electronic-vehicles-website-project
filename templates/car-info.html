@@ -20,7 +20,9 @@ filename='style.css') }}">
     <a id="home" href="{{ url_for('home')}}" >Home</a>
     <a id="sign-in" hidden="false">Sign in</a>
     <a href="{{ url_for('list_cars')}}">VIEW ALL CARS</a>
-     <a id="addcar" href="{{ url_for('addEV_page')}}">ADD CAR</a>
+     {% if user_data %}
+        <a id="addcar" href="{{ url_for('addEV_page')}}">ADD CAR</a>
+     {% endif %}
      <a id="sign-out" hidden="true">Sign out</a>
  </div>
  <h1 class="colorr">Electric Vehicles</h1>
@@ -34,8 +36,9 @@ filename='style.css') }}">
     Year:{{ result.year }}<br/>
     Battery Size:{{ result.battery_size }}<br/>
     WLTP Range:{{ result.WLTP_range }}<br/>
-    Cost:{{ result.cost }}<br/>
+    Cost:€{{ result.cost }}<br/>
     Power:{{ result.power }}<br/>
+    Average Rate:{{avg_rate}}
      {% if user_data %}
         {% if user_data['email'] == result.email %}
             <form action="/delete_car/{{id}}" method="post">
@@ -59,13 +62,38 @@ filename='style.css') }}">
 
      <form action="/add_review/{{id}}" method="post">
     <label for="w3review">Submit your review:</label>
-    <textarea id="w3review" name="w3review" rows="4" cols="50">
-
-      </textarea>
-      <br><br>
-      <input type="submit" value="SUBMIT">
+    <textarea id="w3review" name="revieww" required></textarea>
+    <br/><br/>
+    <label for="rating">Rate:</label>
+    <select id="rating" name="rating" required>
+      <option value="" disabled selected>Select your Rating</option>
+      <option value="1">1</option>
+      <option value="2">2</option>
+      <option value="3">3</option>
+      <option value="4">4</option>
+      <option value="5">5</option>
+      <option value="6">6</option>
+      <option value="7">7</option>
+      <option value="8">8</option>
+      <option value="9">9</option>
+      <option value="10">10</option>
+      </select>
+      <br>
+      <input type="submit" class="btnCompare" value="SUBMIT">
     </form>
+    <br>
+     Reviews:
+    <table>
+        {% for review in result.review_list%}
+            <tr>
 
+                <td>{{review}}</td>
+                <td>Rate:{{result.rating_list[loop.index-1]}}</td>
+
+
+            </tr>
+        {% endfor %}
+    </table>
  </div>
 
 

@@ -68,11 +68,11 @@ filename='style.css') }}">
       {% endif %}
 
       {% if ev.cost==minVal[3] %}
-        <td class="fa-remove">{{ ev.cost }} </td>
+        <td class="fa-check">€{{ ev.cost }} </td>
       {% elif ev.cost==maxVal[3] %}
-        <td class="fa-check">{{ ev.cost }} </td>
+        <td class="fa-remove">€{{ ev.cost }} </td>
       {% else %}
-        <td>{{ ev.cost }} </td>
+        <td>€{{ ev.cost }} </td>
       {% endif %}
 
       {% if ev.power==minVal[4] %}

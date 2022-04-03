@@ -2,7 +2,7 @@ import datetime, os, random
 import google.oauth2.id_token
 from google.auth.transport import requests
 from google.cloud import datastore
-from flask import Flask, render_template, request, redirect  # framework
+from flask import Flask, render_template, request, redirect, url_for  # framework
 
 app = Flask(__name__)  # flask app object
 # __name__ part takes the name of curr file
@@ -59,6 +59,8 @@ def createEV(claims, obj_name, manufacturer, year, battery_size, wltp_range, cos
         'WLTP_range': wltp_range,
         'cost': cost,
         'power': power,
+        'review_list': [],
+        'rating_list': []
     })
     datastore_client.put(entity)
     return id
@@ -164,6 +166,7 @@ def detcarinfo_page(id):
     id_token = request.cookies.get("token")
     error_message = None
     claims = None
+    avg_rate = 0
     if id_token:
         try:
             claims = google.oauth2.id_token.verify_firebase_token(id_token,
@@ -172,7 +175,9 @@ def detcarinfo_page(id):
             error_message = str(exc)
     entity_key = datastore_client.key('car', id)
     result = datastore_client.get(entity_key)
-    return render_template('car-info.html', user_data=claims, result=result, id=id)
+    for rate in result['rating_list']:
+        avg_rate += int(rate)
+    return render_template('car-info.html', user_data=claims, result=result, avg_rate=avg_rate, id=id)
 
 
 @app.route('/delete_car/<int:id>', methods=['POST'])
@@ -193,7 +198,36 @@ def deleteCarFromUser(id):
                            cars=cars)
 
 
+@app.route('/add_review/<int:id>', methods=['POST'])
+def addReview(id):
+    id_token = request.cookies.get("token")
+    error_message = None
+    cars = None
+    claims = None
+    result = None
 
+    if id_token:
+        try:
+            claims = google.oauth2.id_token.verify_firebase_token(id_token,
+                                                                  firebase_request_adapter)
+
+        except ValueError as exc:
+            error_message = str(exc)
+        entity_key = datastore_client.key('car', id)
+        entity = datastore_client.get(entity_key)
+        reviews = entity['review_list']
+        ratings = entity['rating_list']
+        print(request.form.get('rating'))
+        reviews.append(request.form.get('revieww'))
+        ratings.append(request.form.get('rating'))
+        entity.update({
+            'review_list': reviews,
+            'rating_list': ratings
+        })
+        datastore_client.put(entity)
+        result = datastore_client.get(entity_key)
+    # return render_template('car-info.html', user_data=claims, result=result, id=id)
+    return redirect(url_for('detcarinfo_page', id=id))
 
 
 @app.route('/edit_car_info/<int:id>', methods=['POST'])
@@ -274,7 +308,7 @@ def compare_cars():
 
     for i in range(len(compare)):
         comp = compare[i]
-        for j in range(1, len(compare)):
+        for j in range(0, len(compare)):
             comp2 = compare[j]
             if comp['year'] <= comp2['year']:
                 if minValue[0] == 0 or int(minValue[0]) > int(comp['year']):
@@ -337,8 +371,8 @@ def addEV():
             user_info = retrieveUserInfo(claims)
             cars = retrieve_all_entities()
             for car in cars:
-                if car['obj_name'] == request.form['obj_name'] and car['manufacturer'] == request.form[
-                    'manufacturer'] and car['year'] == request.form['year']:
+                if car['obj_name'] == request.form['obj_name'] and car['manufacturer'] == request.form['manufacturer'] \
+                        and car['year'] == request.form['year']:
                     return render_template('addEV.html', add=False)
 
             id = createEV(
